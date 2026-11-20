@@ -11,7 +11,7 @@ enum ErrorHandler {
     InvalidFileHeader,
 }
 
-fn parse_file_bytes(path_val: &String) -> Result<(), ErrorHandler> {
+fn parse_file_bytes1(path_val: &String) -> Result<(), ErrorHandler> {
     let file_path = path_val.as_str();
 
     if let Ok(mut file) = fs::File::open(file_path) {
@@ -47,7 +47,7 @@ fn main() -> Result<(), ErrorHandler> {
         return Err(ErrorHandler::EmptyFilePath);
     }
 
-    let parsed_content = parse_file_bytes(&path_val);
+    let parsed_content = parse_file_bytes1(&path_val);
 
     parsed_content
 }
