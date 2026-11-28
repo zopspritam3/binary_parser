@@ -2,10 +2,11 @@ mod helpers;
 mod parse;
 mod types;
 
-use crate::helpers::path_resolver::path_resolver;
+use crate::helpers::path_resolver::read_directory;
 use crate::types::types::ErrorHandler;
 use parse::parse_file::parse_file_bytes;
-use std::env;
+use std::path::Path;
+use std::{env, thread};
 
 fn main() -> Result<(), ErrorHandler> {
     let arguments: Vec<String> = env::args().skip(1).collect();
@@ -17,13 +18,29 @@ fn main() -> Result<(), ErrorHandler> {
         return Err(ErrorHandler::EmptyArguments);
     }
 
-    let path = path_resolver(path_val)?.to_owned();
+    let paths = read_directory(Path::new(path_val));
+    let mut handles = vec![];
 
-    let extra_flags: Vec<&str> = arguments[2..].iter().map(|f| f.as_str()).collect();
+    match paths {
+        Ok(paths) => {
+            for path in paths {
+                let flags = arguments.clone();
+                let h = thread::spawn(move || parse_file_bytes(path, &flags[2..]));
 
-    let parsed_content = parse_file_bytes(path, extra_flags);
+                handles.push(h);
+            }
+        }
+        Err(_) => return Err(ErrorHandler::ReadDirError),
+    }
 
-    println!("{:#?}", parsed_content.ok());
+    for handle in handles {
+        let result = handle.join().unwrap();
+
+        if let Ok(res) = result {
+            println!("{:#?}", res);
+            println!();
+        }
+    }
 
     Ok(())
 }

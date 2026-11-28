@@ -29,28 +29,19 @@ impl FileDetails {
 
 #[derive(Debug)]
 pub enum ErrorHandler {
-    EmptyFilePath,
     EmptyArguments,
     InvalidFilePath,
     InvalidFileType,
     ByteReadingError,
     EmptyFileArguments,
     EmptyFileBuffer,
+    ReadDirError,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PathType {
     pub absolute_path: String,
     pub buffer: PathBuf,
-}
-
-impl PathType {
-    pub fn new(absolute: String, buffer: PathBuf) -> Self {
-        Self {
-            absolute_path: absolute,
-            buffer,
-        }
-    }
 }
 
 impl Dimension {

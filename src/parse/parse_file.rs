@@ -2,7 +2,7 @@ use std::{fs, io::Read};
 
 use crate::types::types::{Dimension, ErrorHandler, FileDetails, PathType};
 
-pub fn parse_file_bytes(path: PathType, flags: Vec<&str>) -> Result<FileDetails, ErrorHandler> {
+pub fn parse_file_bytes(path: PathType, flags: &[String]) -> Result<FileDetails, ErrorHandler> {
     let file_path = &path.absolute_path;
     let mut file_details = FileDetails::new();
 
@@ -30,7 +30,7 @@ pub fn parse_file_bytes(path: PathType, flags: Vec<&str>) -> Result<FileDetails,
                 let dimensions = Dimension::new(height, width);
 
                 for flag in flags {
-                    match flag {
+                    match flag.as_str() {
                         "--dimensions" => {
                             file_details.dimension = Some(dimensions);
                         }
